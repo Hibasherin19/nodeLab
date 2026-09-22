@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NodeLab</title>
+</head>
+
+<body>
+
+    <h1>NodeLab</h1>
+
+    <h2>Sign Up</h2>
+
+    <form id="signupForm">
+        <input type="text" id="signupName" placeholder="Name" required>
+        <br><br>
+
+        <input type="email" id="signupEmail" placeholder="Email" required>
+        <br><br>
+
+        <input type="password" id="signupPassword" placeholder="Password" required>
+        <br><br>
+
+        <button type="submit">Sign Up</button>
+    </form>
+
+    <p id="signupMessage"></p>
+
+    <hr>
+
+    <h2>Log In</h2>
+
+    <form id="loginForm">
+        <input type="email" id="loginEmail" placeholder="Email" required>
+        <br><br>
+
+        <input type="password" id="loginPassword" placeholder="Password" required>
+        <br><br>
+
+        <button type="submit">Log In</button>
+    </form>
+
+    <p id="loginMessage"></p>
+
+
+    <script>
+
+        // =========================
+        // SIGN UP
+        // =========================
+
+        document.getElementById("signupForm").addEventListener("submit", async function(event) {
+
+            event.preventDefault();
+
+            const name = document.getElementById("signupName").value;
+            const email = document.getElementById("signupEmail").value;
+            const password = document.getElementById("signupPassword").value;
+
+            const response = await fetch("/signup", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    name: name,
+                    email: email,
+                    password: password
+                })
+            });
+
+            const data = await response.json();
+
+            document.getElementById("signupMessage").textContent = data.message;
+
+            if (data.success) {
+                document.getElementById("signupForm").reset();
+            }
+
+        });
+
+
+        // =========================
+        // LOGIN
+        // =========================
+
+        document.getElementById("loginForm").addEventListener("submit", async function(event) {
+
+            event.preventDefault();
+
+            const email = document.getElementById("loginEmail").value;
+            const password = document.getElementById("loginPassword").value;
+
+            console.log("Login button clicked");
+
+            try {
+
+                const response = await fetch("/login", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        email: email,
+                        password: password
+                    })
+                });
+
+                const data = await response.json();
+
+                console.log("Server response:", data);
+
+                document.getElementById("loginMessage").textContent = data.message;
+
+                if (data.success) {
+
+                    localStorage.setItem("userName", data.name);
+
+                    window.location.href = "/dashboard.html";
+
+                }
+
+            } catch (error) {
+
+                console.error("Login error:", error);
+
+                document.getElementById("loginMessage").textContent =
+                    "Unable to connect to server.";
+
+            }
+
+        });
+
+    </script>
+
+</body>
+</html>
